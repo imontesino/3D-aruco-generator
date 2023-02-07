@@ -151,7 +151,7 @@ def generate_aruco_ocupancy_grid(dict_type: str, marker_id: int):
     marker = np.where(marker == 255, 1, 0)
 
     # rotate the marker -90 degrees
-    marker = np.rot90(marker, -1)
+    # marker = np.rot90(marker, -1)
 
     return marker
 
@@ -160,8 +160,6 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description="Generate Aruco Markers")
 
-    parser.add_argument("-s", "--show", action="store_true",
-                        help="Show the generated marker in a window")
     parser.add_argument("-o", "--output", type=str, default="aruco_marker",
                         help="Output file name")
     parser.add_argument("--default_id", type=int,
@@ -176,32 +174,38 @@ def main():
 
     args = parse_args()
 
-    SHOW_2D_IMAGE = args.show
     FILENAME = args.output
 
     if args.default_id:
         marker_type, marker_id = "DICT_4X4_50", args.default_id
         card_side = 90
         card_margin = 10
-        card_height = 0.4
-        marker_depth = 1
+        card_height = 1
+        groove_depth = 0.4
     else:
         card_side = get_user_input("Enter the card side length (inches)", float)
         card_margin = get_user_input("Enter the card margin (inches)", float)
         card_height = get_user_input("Enter the card height (inches)", float)
-        marker_depth = get_user_input("Enter the marker depth (inches)", float)
+        groove_depth = get_user_input("Enter the groove depth (inches)", float)
         marker_type, marker_id = get_aruco_dict_and_type()
 
 
-    print(f"Generating Aruco Marker: {marker_type}")
+    print(f"Aruco Dictionary: {marker_type}")
     aruco_img = generate_aruco_ocupancy_grid(marker_type, marker_id)
 
 
-    print(f"ArUco Image: \n {aruco_img}")
-    if SHOW_2D_IMAGE:
-        cv2.imshow('Aruco Marker\n(press any key to quiet)', aruco_img)
-        cv2.waitKey()
-
+    print(f"ArUco Image: ")
+    # print as ASCII art
+    print(u"\u2588"*(aruco_img.shape[1]+2)*2)
+    for i in range(0, aruco_img.shape[0]):
+        print(u"\u2588"*2, end="")
+        for j in range(0, aruco_img.shape[1]):
+            if aruco_img[i,j] == 0:
+                print(" "*2, end="")
+            else:
+                print(u"\u2588"*2, end="")
+        print(u"\u2588"*2)
+    print(u"\u2588"*(aruco_img.shape[1]+2)*2)
 
     # Extrude the aruco marker
     aruco_extrusion = cq.Workplane('XY')
@@ -216,17 +220,17 @@ def main():
         for j in range(0, aruco_img.shape[1]):
             if aruco_img[i,j] == 0:
                 extrusion_points.append(
-                    (
-                        i * square_side - square_offset,
-                        j * square_side - square_offset,
+                    (  # Rotate to align X and Y axes
+                        (j) * square_side - square_offset,
+                        (aruco_img.shape[0]-1-i) * square_side - square_offset,
                     )
                 )
 
-    aruco_extrusion = aruco_extrusion.pushPoints(extrusion_points).rect(square_side,square_side).extrude(card_height-marker_depth)
+    aruco_extrusion = aruco_extrusion.pushPoints(extrusion_points).rect(square_side,square_side).extrude(card_height-groove_depth)
 
     # Add a base under the aruco marker
-    base = cq.Workplane('XY').rect(card_side, card_side).extrude(marker_depth)
-    base = base.rect(card_side, card_side).extrude(-card_height+marker_depth)
+    base = cq.Workplane('XY').rect(card_side, card_side).extrude(groove_depth)
+    base = base.rect(card_side, card_side).extrude(-card_height+groove_depth)
 
     # Subtract the aruco marker from the base
     obj = base.cut(aruco_extrusion)

@@ -183,10 +183,10 @@ def main():
         card_height = 1
         groove_depth = 0.4
     else:
-        card_side = get_user_input("Enter the card side length (inches)", float)
-        card_margin = get_user_input("Enter the card margin (inches)", float)
-        card_height = get_user_input("Enter the card height (inches)", float)
-        groove_depth = get_user_input("Enter the groove depth (inches)", float)
+        card_side = get_user_input("Enter the total side length (marker+margin) (mm)", float)
+        card_margin = get_user_input("Enter the white margin width (mm)", float)
+        card_height = get_user_input("Enter the marker thikness (mm)", float)
+        groove_depth = get_user_input("Enter the groove depth (mm)", float)
         marker_type, marker_id = get_aruco_dict_and_type()
 
 

@@ -76,7 +76,23 @@ Available Aruco Markers:
 Enter the type of marker to generate (q to exit) (Default: ARUCO_ORIGINAL): 0
 Enter the marker id (q to exit): 1
 Aruco Dictionary: DICT_4X4_50
-ArUco Image:
+ArUco Marker 0:
+████████████████
+██            ██
+██            ██
+██  ████████  ██
+██  ██    ██  ██
+██  ██  ██    ██
+██            ██
+████████████████
+```
+
+Or enter them as CLI arguments:
+
+```bash
+$ python3 generate_aruco.py --box_side 90 --marker_margin 10 --box_thickness 1 --marker_groove_depth 0.4 --aruco_dictionary DICT_4X4_50 --marker_id 0
+Aruco Dictionary: DICT_4X4_50
+ArUco Marker 0:
 ████████████████
 ██            ██
 ██            ██

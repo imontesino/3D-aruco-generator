@@ -159,13 +159,30 @@ def parse_args():
     """ Parse command line arguments """
 
     parser = argparse.ArgumentParser(description="Generate Aruco Markers")
-
+        # card_side = get_user_input("Enter the total side length (marker+margin) (mm)", float)
+        # card_margin = get_user_input("Enter the white margin width (mm)", float)
+        # card_height = get_user_input("Enter the marker thikness (mm)", float)
+        # groove_depth = get_user_input("Enter the groove depth (mm)", float)
+        # marker_type, marker_id = get_aruco_dict_and_type()
     parser.add_argument("-o", "--output", type=str, default="aruco_marker",
                         help="Output file name")
     parser.add_argument("--default_id", type=int,
                         help=("Provide only marker id, usee default parameters,"
                               " 4X4_50, 90mm side, 1mm marker depth, 10mm margin,"
                               "0.4mm marker groove depth"))
+    parser.add_argument("--box_side", type=float,
+                        help="Provide box side length in mm")
+    parser.add_argument("--box_thickness", type=float,
+                        help="Provide box thickness in mm")
+    parser.add_argument("--marker_margin", type=float,
+                        help="Provide marker margin in mm")
+    parser.add_argument("--marker_groove_depth", type=float,
+                        help="Provide marker groove depth in mm")
+    parser.add_argument("--aruco_dictionary", type=str,
+                        help=f"Choose from the available aruco dictionaries: {list(ARUCO_DICT.keys())}")
+    parser.add_argument("--marker_id", type=int,
+                        help="Provide marker id")
+
 
     return parser.parse_args()
 
@@ -182,19 +199,40 @@ def main():
         card_margin = 10
         card_height = 1
         groove_depth = 0.4
+        FILENAME += f"_{marker_id}"
     else:
-        card_side = get_user_input("Enter the total side length (marker+margin) (mm)", float)
-        card_margin = get_user_input("Enter the white margin width (mm)", float)
-        card_height = get_user_input("Enter the marker thikness (mm)", float)
-        groove_depth = get_user_input("Enter the groove depth (mm)", float)
-        marker_type, marker_id = get_aruco_dict_and_type()
+        if args.aruco_dictionary and args.marker_id is not None:
+            marker_type = args.aruco_dictionary
+            marker_id = args.marker_id
+        else:
+            marker_type, marker_id = get_aruco_dict_and_type()
+
+        if args.box_side:
+            card_side = args.box_side
+        else:
+            card_side = get_user_input("Enter the total side length (marker+margin) (mm)", float)
+
+        if args.box_thickness:
+            card_height = args.box_thickness
+        else:
+            card_height = get_user_input("Enter the marker thickness (mm)", float)
+
+        if args.marker_margin:
+            card_margin = args.marker_margin
+        else:
+            card_margin = get_user_input("Enter the white margin width (mm)", float)
+
+        if args.marker_groove_depth:
+            groove_depth = args.marker_groove_depth
+        else:
+            groove_depth = get_user_input("Enter the groove depth (mm)", float)
 
 
     print(f"Aruco Dictionary: {marker_type}")
     aruco_img = generate_aruco_ocupancy_grid(marker_type, marker_id)
 
 
-    print(f"ArUco Image: ")
+    print(f"ArUco Marker {marker_id}: ")
     # print as ASCII art
     print(u"\u2588"*(aruco_img.shape[1]+2)*2)
     for i in range(0, aruco_img.shape[0]):

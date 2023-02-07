@@ -89,3 +89,12 @@ ArUco Image:
 
 The generated STL file will be saved as `aruco_marker.stl` in the current directory.
 
+![aruco_marker](images/aruco_cura_example.png)
+
+### Layer height
+
+The idea is to have 1 or 2 layers of depth for the groove to paint the marker black.
+In our experience paint such as "musou black" vastly improves readability of the marker.
+As it prevents the marker from reflecting light.
+
+![aruco_slices](images/aruco_slices.png)

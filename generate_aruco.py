@@ -147,9 +147,6 @@ def generate_aruco_ocupancy_grid(dict_type: str, marker_id: int):
     # Generate the marker
     marker = np.array(aruco_dict.generateImageMarker(marker_id, int(rows) + 2))
 
-    # Convert the marker to grayscale
-    # marker = cv2.cvtColor(marker, cv2.COLOR_BGR2GRAY)
-
     # Convert the marker to a binary array
     marker = np.where(marker == 255, 1, 0)
 
@@ -185,9 +182,9 @@ def main():
     if args.default_id:
         marker_type, marker_id = "DICT_4X4_50", args.default_id
         card_side = 90
-        card_margin = 1
-        card_height = 5
-        marker_depth = 2
+        card_margin = 10
+        card_height = 0.4
+        marker_depth = 1
     else:
         card_side = get_user_input("Enter the card side length (inches)", float)
         card_margin = get_user_input("Enter the card margin (inches)", float)

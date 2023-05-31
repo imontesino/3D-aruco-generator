@@ -182,7 +182,10 @@ def parse_args():
                         help=f"Choose from the available aruco dictionaries: {list(ARUCO_DICT.keys())}")
     parser.add_argument("--marker_id", type=int,
                         help="Provide marker id")
-
+    parser.add_argument("--magnet_inset_radius", type=float,
+                        help="If given, two circular indentations will be made on the bottom of the box for magnets")
+    parser.add_argument("--layer_height", type=float,
+                        help="Layer height for the 3D printer, will be used for inset depth and groove depth")
 
     return parser.parse_args()
 
@@ -227,6 +230,15 @@ def main():
         else:
             groove_depth = get_user_input("Enter the groove depth (mm)", float)
 
+        if args.magnet_inset_radius:
+            magnet_inset_radius = args.magnet_inset_radius / 10
+        else:
+            magnet_inset_radius = None
+
+        if args.layer_height:
+            layer_height = args.layer_height / 10
+        else:
+            layer_height = get_user_input("Enter the layer height (mm)", float)
 
     print(f"Aruco Dictionary: {marker_type}")
     aruco_img = generate_aruco_ocupancy_grid(marker_type, marker_id)
@@ -272,6 +284,24 @@ def main():
 
     # Subtract the aruco marker from the base
     obj = base.cut(aruco_extrusion)
+
+    # Add a magnet inset
+    dist_to_indent = card_side/2-card_margin/2
+    if magnet_inset_radius is not None:
+        print("Adding magnet inset")
+        indent_positions = [
+            (dist_to_indent, dist_to_indent),
+            (-dist_to_indent, -dist_to_indent),
+            (dist_to_indent, -dist_to_indent),
+            (-dist_to_indent, dist_to_indent),
+        ]
+        obj = obj.faces("<Z").workplane().pushPoints(indent_positions).circle(magnet_inset_radius).cutBlind(-layer_height)
+
+    # Add the number if the marher in the bottom
+    obj = obj.faces("<Z").workplane().center(0.0, -dist_to_indent).text(str(marker_id), card_margin*0.7, -layer_height, combine='cut')
+
+    # Add the dictionary name in the bottom
+    obj = obj.faces("<Z").workplane().center(0.0, dist_to_indent*2).transformed(rotate=(0,0,180)).text(marker_type, card_margin*0.5, -layer_height, combine='cut')
 
     obj.val().exportStl(FILENAME+'.stl', ascii=True)
 

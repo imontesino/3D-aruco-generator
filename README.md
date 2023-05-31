@@ -10,6 +10,7 @@ The recommended way to install the requirements is to use a virtual environment:
 ```bash
 python3 -m venv aruco_3d_env
 source aruco_3d_env/bin/activate
+python3 -m pip install --upgrade pip  # cadquery requires pip upgrade
 pip install -r requirements.txt
 ```
 
@@ -90,7 +91,7 @@ ArUco Marker 0:
 Or enter them as CLI arguments:
 
 ```bash
-$ python3 generate_aruco.py --box_side 90 --marker_margin 10 --box_thickness 1 --marker_groove_depth 0.4 --aruco_dictionary DICT_4X4_50 --marker_id 0
+$ python3 generate_aruco.py --box_side 90 --marker_margin 10 --box_thickness 1 --marker_groove_depth 0.4 --aruco_dictionary DICT_4X4_50 --marker_id 1
 Aruco Dictionary: DICT_4X4_50
 ArUco Marker 0:
 ████████████████

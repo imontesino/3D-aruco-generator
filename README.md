@@ -14,6 +14,12 @@ python3 -m pip install --upgrade pip  # cadquery requires pip upgrade
 pip install -r requirements.txt
 ```
 
+In Ubuntu you have to defer to the system package manager for the following packages:
+
+```bash
+export FONTCONFIG_FILE=/etc/fonts/fonts.conf
+```
+
 ## Usage
 
 To generate an STL file of an aruco marker, run the following command,

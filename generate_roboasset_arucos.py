@@ -8,7 +8,7 @@ def roboasset_aruco_command(dictionary_name: str,
     command = "python3 generate_aruco.py"
     command += " --box_side 90"
     command += " --marker_margin 10"
-    command += " --box_thickness 1.4"
+    command += " --box_thickness 2"
     command += " --marker_groove_depth 0.8"
     command += f" --aruco_dictionary {dictionary_name}"
     command += f" --marker_id {marker_id}"
